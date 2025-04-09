@@ -3,7 +3,7 @@ package com.packages.Authentication.Model.Abstract;
 import com.packages.Authentication.Model.Enum.Role;
 import jakarta.persistence.*;
 
-
+@MappedSuperclass
 public abstract class User{
 
     public User(){}
