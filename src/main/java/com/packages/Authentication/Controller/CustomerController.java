@@ -1,5 +1,6 @@
 package com.packages.Authentication.Controller;
 
+import com.packages.Authentication.Model.Users.Admin;
 import com.packages.Authentication.Model.Users.Customers;
 import com.packages.Authentication.Service.UserService.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,11 @@ public class CustomerController {
     @GetMapping("/customer/getAll")
     public List<Customers> customersList(){
         return customerService.getAllCustomers();
+    }
+
+    @PostMapping("/customerLogin")
+    public String login(@RequestBody Customers customer){
+        return customerService.verify(customer);
     }
 
     @PostMapping("/customerRegister")

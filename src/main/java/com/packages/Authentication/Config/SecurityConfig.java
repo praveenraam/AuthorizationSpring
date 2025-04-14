@@ -3,22 +3,25 @@ import com.packages.Authentication.Service.AuthenticationUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity // Saying server to ignore built in filter chains and access our own security chain
 public class SecurityConfig {
     private final AuthenticationUserService userDetailsService;
+
+    @Autowired
+    private JWTFilter jwtFilter;
 
     public SecurityConfig(AuthenticationUserService userDetailsService) {
         this.userDetailsService = userDetailsService;
@@ -32,8 +35,10 @@ public class SecurityConfig {
 
 //      Asking for Authorization on all the request, if any exceptions include it
         http.authorizeHttpRequests(request -> request
-                .requestMatchers("/customerRegister", "/adminRegister", "/sellerRegister").permitAll() // No auth needed
-                .requestMatchers("/").hasRole("CUSTOMER") // Only CUSTOMER can access "/"
+                .requestMatchers("/customerRegister", "/adminRegister", "/sellerRegister","/adminLogin","/customerLogin","/sellerLogin").permitAll() // No auth needed
+                .requestMatchers("/customer").hasRole("CUSTOMER")
+                .requestMatchers("/seller").hasRole("SELLER")
+                .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated() // Everything else needs authentication
         );
 
@@ -45,7 +50,7 @@ public class SecurityConfig {
 
 //      We are going with stateless for session, and there are other options also, just explore it
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -58,6 +63,10 @@ public class SecurityConfig {
         return daoAuthenticationProvider;
     }
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
 
 
 }

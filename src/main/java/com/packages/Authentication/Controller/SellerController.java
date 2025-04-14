@@ -1,5 +1,6 @@
 package com.packages.Authentication.Controller;
 
+import com.packages.Authentication.Model.Users.Admin;
 import com.packages.Authentication.Model.Users.Sellers;
 import com.packages.Authentication.Service.UserService.SellerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,11 @@ public class SellerController {
     @GetMapping("/seller/getAll")
     public List<Sellers> sellersList(){
         return sellerService.getAllSellers();
+    }
+
+    @PostMapping("/sellerLogin")
+    public String login(@RequestBody Sellers seller){
+        return sellerService.verify(seller);
     }
 
     @PostMapping("/sellerRegister")

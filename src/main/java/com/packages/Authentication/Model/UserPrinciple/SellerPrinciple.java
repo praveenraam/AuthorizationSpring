@@ -18,7 +18,7 @@ public class SellerPrinciple implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("SELLER"));
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_SELLER"));
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SellerPrinciple implements UserDetails {
 
     @Override
     public String getUsername() {
-        return seller.getName();
+        return seller.getEmail();
     }
 
     @Override
